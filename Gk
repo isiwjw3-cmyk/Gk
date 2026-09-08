@@ -1,0 +1,92 @@
+-- IU has Script (GUI Utility for Remote Execution)
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local CodeInput = Instance.new("TextBox")
+local SubmitBtn = Instance.new("TextButton")
+local StatusLabel = Instance.new("TextLabel")
+
+-- Properties Setup
+ScreenGui.Name = "IU_has_Gui"
+ScreenGui.Parent = game:GetService("CoreGui") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+MainFrame.Position = UDim2.new(0.35, 0, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 320, 0, 220)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "IU has - Remote Executor"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18.000
+
+CodeInput.Name = "CodeInput"
+CodeInput.Parent = MainFrame
+CodeInput.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+CodeInput.Position = UDim2.new(0.05, 0, 0.22, 0)
+CodeInput.Size = UDim2.new(0.9, 0, 0.4, 0)
+CodeInput.Font = Enum.Font.Code
+CodeInput.PlaceholderText = "วางโค้ดที่ได้จาก SimpleSpy ที่นี่..."
+CodeInput.Text = ""
+CodeInput.TextColor3 = Color3.fromRGB(0, 255, 127)
+CodeInput.TextSize = 12.000
+CodeInput.TextWrapped = true
+CodeInput.TextXAlignment = Enum.TextXAlignment.Left
+CodeInput.TextYAlignment = Enum.TextYAlignment.Top
+
+SubmitBtn.Name = "SubmitBtn"
+SubmitBtn.Parent = MainFrame
+SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 100)
+SubmitBtn.Position = UDim2.new(0.05, 0, 0.67, 0)
+SubmitBtn.Size = UDim2.new(0.9, 0, 0.18, 0)
+SubmitBtn.Font = Enum.Font.SourceSansBold
+SubmitBtn.Text = "ส่งโค้ด (Execute)"
+SubmitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SubmitBtn.TextSize = 16.000
+
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundTransparency = 1.000
+StatusLabel.Position = UDim2.new(0.05, 0, 0.87, 0)
+StatusLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
+StatusLabel.Font = Enum.Font.SourceSans
+StatusLabel.Text = "สถานะ: พร้อมใช้งาน"
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+StatusLabel.TextSize = 12.000
+
+-- Functionality
+SubmitBtn.MouseButton1Click:Connect(function()
+	local code = CodeInput.Text
+	if code == "" then
+		StatusLabel.Text = "สถานะ: กรุณาใส่โค้ดก่อนกดส่ง!"
+		StatusLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
+		return
+	end
+
+	StatusLabel.Text = "สถานะ: กำลังส่งโค้ด..."
+	StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+
+	-- แปลงข้อความจาก Text Input เป็น Script ที่รันได้
+	local executeFunc, err = loadstring(code)
+	
+	if executeFunc then
+		local success, result = pcall(executeFunc)
+		if success then
+			StatusLabel.Text = "สถานะ: ส่งสำเร็จแล้ว!"
+			StatusLabel.TextColor3 = Color3.fromRGB(85, 255, 127)
+		else
+			StatusLabel.Text = "เกิดข้อผิดพลาด: " .. tostring(result)
+			StatusLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
+		end
+	else
+		StatusLabel.Text = "โค้ดไม่ถูกต้อง: " .. tostring(err)
+		StatusLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
+	end
+end)
